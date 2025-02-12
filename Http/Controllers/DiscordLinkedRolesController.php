@@ -59,7 +59,7 @@ class DiscordLinkedRolesController extends Controller
         $products = $user->orderProducts()->where('status', 'paid')->get();
         $activeProducts = count($products);
         Http::withToken($token)->put($url, [
-            'platform_name' => 'DiscordLinkedRoles',
+            'platform_name' => 'Paymenter',
             'metadata' => [
                 'syncedwithpaymenter' => true,
                 'activeproducts' => $activeProducts
