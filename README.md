@@ -28,7 +28,7 @@ Linking Paymenter -> Discord
 
      `/yourinstallationpath/extensions/Others/DiscordLinkedRoles`
 
-2. After that move the php file in /Http/Controllers to /var/www/paymenter/Http/Controllers and the /Console/Commands php file to /var/www/paymenter/app/Console/Commands 
+2. After that move the php file in /Console/Commands to /var/www/paymenter/app/Console/Commands 
 
 Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
 
