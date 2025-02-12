@@ -1,4 +1,4 @@
-# Paymenter - Discord linked roles
+# Paymenter v1 - Discord linked roles
 
 ## What is this?
 
