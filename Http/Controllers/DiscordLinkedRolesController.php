@@ -20,13 +20,13 @@ class DiscordLinkedRolesController extends Controller
     {
         config()->set('services.discord.redirect', config('settings.app_url') . '/linkedroles/callback');
         $code = $request->input('code');
-        if (!$code) return redirect()->route('index')->with('error', 'Something went wrong while linking your discord account');
+        if (!$code) return redirect()->route('home')->with('error', 'Something went wrong while linking your discord account');
         $token = $this->getAccessToken($code);
-        if (!$token) return redirect()->route('index')->with('error', 'Something went wrong while linking your discord account');
+        if (!$token) return redirect()->route('home')->with('error', 'Something went wrong while linking your discord account');
         $user = $this->getUser($token);
-        if (!$user) return redirect()->route('index')->with('error', 'Something went wrong while linking your discord account');
+        if (!$user) return redirect()->route('home')->with('error', 'Something went wrong while linking your discord account');
         $this->updateMetaData($user['id'], $token);
-        return redirect()->route('index')->with('success', 'Your discord account has been linked!');
+        return redirect()->route('home')->with('success', 'Your discord account has been linked!');
     }
 
     private function getAccessToken($code)
@@ -46,7 +46,7 @@ class DiscordLinkedRolesController extends Controller
 
     private function getUser($token)
     {
-        $url = 'https://discord.com/api/v8/users/@me';
+        $url = 'https://discord.com/api/v10/users/@me';
         $response = Http::withToken($token)->get($url);
         if ($response->failed()) return false;
         return $response->json();
@@ -56,10 +56,10 @@ class DiscordLinkedRolesController extends Controller
     {
         $url = 'https://discord.com/api/v10/users/@me/applications/' . config('settings.oauth_discord_client_id') . '/role-connection';
         $user = User::find(auth()->user()->id);
-        $products = $user->orderProducts()->where('status', 'paid')->get();
+        $products = $user->services()->where('status', 'paid')->get();
         $activeProducts = count($products);
         Http::withToken($token)->put($url, [
-            'platform_name' => 'Paymenter',
+            'platform_name' => 'DiscordLinkedRoles',
             'metadata' => [
                 'syncedwithpaymenter' => true,
                 'activeproducts' => $activeProducts
