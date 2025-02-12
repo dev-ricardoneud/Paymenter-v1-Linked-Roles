@@ -18,23 +18,38 @@ Linking Paymenter -> Discord
 
 ## How to install
 
-**1.** Download using composer:
+1. Download the files and place the folder (unzipped) in the following directory of your installation:
 
-`composer require corwindev/paymenter-discordlink`
+   - For the default Paymenter installation: 
+
+     `/var/www/paymenter/extensions/Others`
+
+   - For a custom installation, use the path:
+
+     `/yourinstallationpath/extensions/Others`
+
+2. If you're adding a file to the `/Http/Console` directory, follow these steps:
+
+   - Navigate to the location where you are currently working.
+   - Place the file in the `/Http/Console` folder in your installation directory: 
+
+     `/yourinstallationpath/app/Http/Console`
+
+   Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
 
 ### **ATTENTION!** If you already have Discord login set up in your panel, skip steps 4 and 5.
 
-**2.** Go to https://discord.com/developers/applications/ and create a new application.
+**3.** Go to https://discord.com/developers/applications/ and create a new application.
 
-**3.** Access the newly created application, go to the Bot tab, and create a new bot. Copy the received token and save it in a secure place.
+**4.** Access the newly created application, go to the Bot tab, and create a new bot. Copy the received token and save it in a secure place.
 
-**4.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/linkedroles/callback`.
+**5.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/linkedroles/callback`.
 
-**5.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/linkedroles` into the **LINKED ROLES VERIFICATION URL** field.
+**6.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/linkedroles` into the **LINKED ROLES VERIFICATION URL** field.
 
-**6.** Add your bot to your server using the Url Generator from the OAuth2 tab.
+**7.** Add your bot to your server using the Url Generator from the OAuth2 tab.
 
-**7.** Run the following command in the terminal:
+**8.** Run the following command in the terminal:
 
 ```bash
 php artisan discord:link
