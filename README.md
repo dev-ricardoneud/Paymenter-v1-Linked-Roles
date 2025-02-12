@@ -28,14 +28,11 @@ Linking Paymenter -> Discord
 
      `/yourinstallationpath/extensions/Others`
 
-2. If you're adding a file to the `/Http/Console` directory, follow these steps:
+2. If you're adding a file to the /Http/Console directory, follow these steps:
 
-   - Navigate to the location where you are currently working.
-   - Place the file in the `/Http/Console` folder in your installation directory: 
-
-     `/yourinstallationpath/app/Http/Console`
-
-   Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
+Navigate to the Http/Console/Commands folder inside the extension directory.
+Move the file from this folder to the /var/www/paymenter/app/Http/Console/Commands directory, or to the corresponding Commands directory in your custom installation path.
+Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
 
 ### **ATTENTION!** If you already have Discord login set up in your panel, skip steps 4 and 5.
 
