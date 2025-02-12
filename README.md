@@ -18,23 +18,19 @@ Linking Paymenter -> Discord
 
 ## How to install
 
-1. Download the files and place the folder (unzipped) in the following directory of your installation:
+1. Download the files and add them into the following directory of your installation:
 
    - For the default Paymenter installation: 
 
-     `/var/www/paymenter/extensions/Others`
+     `/var/www/paymenter/extensions/Others/DiscordLinkedRoles`
 
    - For a custom installation, use the path:
 
-     `/yourinstallationpath/extensions/Others`
+     `/yourinstallationpath/extensions/Others/DiscordLinkedRoles`
 
-2. If you're adding a file to the /Http/Console directory, follow these steps:
+2. After that move the php file in /Http/Controllers to /var/www/paymenter/Http/Controllers and the /Console/Commands php file to /var/www/paymenter/app/Console/Commands 
 
-Navigate to the Http/Console/Commands folder inside the extension directory.
-Move the file from this folder to the /var/www/paymenter/app/Http/Console/Commands directory, or to the corresponding Commands directory in your custom installation path.
 Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
-
-### **ATTENTION!** If you already have Discord login set up in your panel, skip steps 4 and 5.
 
 **3.** Go to https://discord.com/developers/applications/ and create a new application.
 
