@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Setting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
@@ -29,8 +30,10 @@ class DiscordLinkedRoles extends Command
      */
     public function handle()
     {
-        if (!config('settings.oauth_discord_client_id'))
-            return $this->error('You need to provide a discord client id in the paymenter panel');
+        $discordClientId = Setting::where('key', 'discordlinkedroles_client_id')->value('value');
+        if (!$discordClientId) {
+            return $this->error('You need to provide a discord client id in the Discord Linked Roles Extension in your paymenter panel');
+        }
 
         $botToken = $this->ask('What is the bot token?');
         if (!$botToken)
@@ -40,7 +43,7 @@ class DiscordLinkedRoles extends Command
 
         $activeProducts = $this->ask('What should the name of the active products be?', 'Active Products');
 
-        $url = 'https://discord.com/api/v10/applications/' . config('settings.oauth_discord_client_id') . '/role-connections/metadata';
+        $url = 'https://discord.com/api/v10/applications/' . $discordClientId . '/role-connections/metadata';
 
         $response = Http::withHeaders([
             'Authorization' => 'Bot ' . $botToken,
