@@ -28,21 +28,17 @@ Linking Paymenter -> Discord
 
      `/yourinstallationpath/extensions/Others/DiscordLinkedRoles`
 
-2. After that move the php file in /Console/Commands to /var/www/paymenter/app/Console/Commands 
+**2.** Go to https://discord.com/developers/applications/ and create a new application.
 
-Make sure the file is in the correct location so it can be loaded by the application and be ready for further development and integration.
+**3.** Access the newly created application, go to the Bot tab, and create a new bot. Copy the received token and save it in a secure place.
 
-**3.** Go to https://discord.com/developers/applications/ and create a new application.
+**4.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/linkedroles/callback`.
 
-**4.** Access the newly created application, go to the Bot tab, and create a new bot. Copy the received token and save it in a secure place.
+**5.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/linkedroles` into the **LINKED ROLES VERIFICATION URL** field.
 
-**5.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/linkedroles/callback`.
+**6.** Add your bot to your server using the Url Generator from the OAuth2 tab.
 
-**6.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/linkedroles` into the **LINKED ROLES VERIFICATION URL** field.
-
-**7.** Add your bot to your server using the Url Generator from the OAuth2 tab.
-
-**8.** Create a role on your server and go to the "Links" section to add a new requirement. You will see a list of social platforms followed by Your Application. Choose Your Application and select the requirements you prefer.
+**7.** Create a role on your server and go to the "Links" section to add a new requirement. You will see a list of social platforms followed by Your Application. Choose Your Application and select the requirements you prefer.
 
 ![image](https://github.com/CorwinDev/paymenter-discordlink/assets/41286754/56ed2f84-ab0d-4672-b0dc-b5b627618727)
 
@@ -56,6 +52,6 @@ To grant a user the role, they must click on "Linked Roles" from the server's co
 ![image](https://github.com/CorwinDev/paymenter-discordlink/assets/41286754/663a7e2f-1c2a-4247-899e-5f6031696a14)
 
 
-**9.** Done!
+**8.** Done!
 
-**10.** Leave a star on the GitHub repository if you like this extension!
+**9.** Leave a star on the GitHub repository if you like this extension!
