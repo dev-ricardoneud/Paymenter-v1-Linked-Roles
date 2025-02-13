@@ -24,6 +24,22 @@ class DiscordLinkedRoles extends Extension
                     'type' => 'placeholder',
                     'label' => new HtmlString($this->getVersion()),
                 ],
+                [
+                    'name' => 'discordlinkedroles_client_id',
+                    'label' => 'Client ID',
+                    'type' => 'text',
+                    'default' => '1296581432969265306',
+                    'description' => 'Discord Client ID',
+                    'required' => true,
+                ],
+                [
+                    'name' => 'discordlinkedroles_client_secret',
+                    'label' => 'Client Secret',
+                    'type' => 'password',
+                    'default' => 'RANDOMEXAMPLESECRET1234567890',
+                    'description' => 'Discord Client Secret',
+                    'required' => true,
+                ],  
             ];
         } catch (\Exception $e) {
             return [
@@ -47,7 +63,7 @@ class DiscordLinkedRoles extends Extension
             $response = Http::get("https://api.github.com/repos/" . self::GITHUB_REPO . "/releases/latest");
             $latestRelease = $response->json();
             $latestVersion = $latestRelease['tag_name'] ?? 'unknown';
-            $currentVersion = 'v1.0.1';
+            $currentVersion = 'v1.0.2';
 
             if (version_compare($currentVersion, $latestVersion, '>')) {
                 return 'The version ' . $currentVersion . ' does not exist. Please check the version number.';
