@@ -61,7 +61,7 @@ class DiscordLinkedRoles extends Extension
             $response = Http::get("https://api.github.com/repos/" . self::GITHUB_REPO . "/releases/latest");
             $latestRelease = $response->json();
             $latestVersion = $latestRelease['tag_name'] ?? 'unknown';
-            $currentVersion = 'v1.0.2';
+            $currentVersion = 'v1.0.3';
 
             if (version_compare($currentVersion, $latestVersion, '>')) {
                 return 'The version ' . $currentVersion . ' does not exist. If this is the main branch, it may contain errors. Please downgrade to the latest stable version (' . $latestVersion . ') to avoid potential issues.';
