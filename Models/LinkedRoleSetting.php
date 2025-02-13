@@ -2,22 +2,20 @@
 
 namespace Paymenter\Extensions\Others\DiscordLinkedRoles\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LinkedRoleSetting extends Model
 {
-    use HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $table = 'linked_role_settings';
     protected $fillable = [
-        'key',
-        'value',
-        'type',
-        'encrypted',
+        'discordlinkedroles_client_id',
+        'discordlinkedroles_client_secret',
+        'discordlinkedroles_bot_token',
     ];
+    public $timestamps = false;
+
+    public static function getSettings()
+    {
+        return self::firstOrCreate([]);
+    }
 }
