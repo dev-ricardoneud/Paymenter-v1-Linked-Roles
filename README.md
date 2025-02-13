@@ -42,13 +42,6 @@ Make sure the file is in the correct location so it can be loaded by the applica
 
 **7.** Add your bot to your server using the Url Generator from the OAuth2 tab.
 
-**8.** Run the following command in the terminal:
-
-```bash
-php artisan discord:link
-```
-Then follow the instructions in the terminal.
-
 **8.** Create a role on your server and go to the "Links" section to add a new requirement. You will see a list of social platforms followed by Your Application. Choose Your Application and select the requirements you prefer.
 
 ![image](https://github.com/CorwinDev/paymenter-discordlink/assets/41286754/56ed2f84-ab0d-4672-b0dc-b5b627618727)
