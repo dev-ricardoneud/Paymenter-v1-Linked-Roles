@@ -3,12 +3,16 @@
 namespace Paymenter\Extensions\Others\DiscordLinkedRoles;
 
 use App\Classes\Extension\Extension;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\HtmlString;
+use Paymenter\Extensions\Others\DiscordLinkedRoles\Models\LinkedRoleSetting;
 
 class DiscordLinkedRoles extends Extension
 {
     const GITHUB_REPO = 'dev-ricardoneud/Paymenter-v1-Linked-Roles';
+    const DISCORD_API_URL = 'https://discord.com/api/v10';
 
     public function getConfig($values = [])
     {
@@ -25,20 +29,9 @@ class DiscordLinkedRoles extends Extension
                     'label' => new HtmlString($this->getVersion()),
                 ],
                 [
-                    'name' => 'discordlinkedroles_client_id',
-                    'label' => 'Client ID',
-                    'type' => 'text',
-                    'default' => '1296581432969265306',
-                    'description' => 'Discord Client ID',
-                    'required' => true,
-                ],
-                [
-                    'name' => 'discordlinkedroles_client_secret',
-                    'label' => 'Client Secret',
-                    'type' => 'password',
-                    'default' => 'RANDOMEXAMPLESECRET1234567890',
-                    'description' => 'Discord Client Secret',
-                    'required' => true,
+                    'name' => 'Discord Bot Connections',
+                    'type' => 'placeholder',
+                    'label' => new HtmlString($this->getDiscordBotConnections()),
                 ],  
             ];
         } catch (\Exception $e) {
@@ -50,6 +43,11 @@ class DiscordLinkedRoles extends Extension
                 ],
             ];
         }
+    }
+
+    public function enabled()
+    {
+        Artisan::call('migrate', ['--path' => 'extensions/Others/DiscordLinkedRoles/database/migrations/2025_02_13_122225_create_linkedroles_table.php']);
     }
 
     public function boot()
@@ -66,7 +64,7 @@ class DiscordLinkedRoles extends Extension
             $currentVersion = 'v1.0.2';
 
             if (version_compare($currentVersion, $latestVersion, '>')) {
-                return 'The version ' . $currentVersion . ' does not exist. Please check the version number.';
+                return 'The version ' . $currentVersion . ' does not exist. If this is the main branch, it may contain errors. Please downgrade to the latest stable version (' . $latestVersion . ') to avoid potential issues.';
             } elseif ($currentVersion === $latestVersion) {
                 return 'You are using the latest version (' . $latestVersion . ').';
             } else {
@@ -74,6 +72,27 @@ class DiscordLinkedRoles extends Extension
             }
         } catch (\Exception $e) {
             return 'Could not check for updates at this time.';
+        }
+    }
+
+    public function getDiscordBotConnections()
+    {
+        try {
+            $discordBotToken = LinkedRoleSetting::value('discordlinkedroles_bot_token');
+            $response = Http::withHeaders([
+                'Authorization' => 'Bot ' . $discordBotToken,
+            ])->get(self::DISCORD_API_URL . '/applications/@me');
+
+            if ($response->failed()) {
+                return 'Could not retrieve bot connection data at this time.';
+            }
+
+            $data = $response->json();
+            $userCount = $data['approximate_user_install_count'] ?? 'unknown';
+
+            return 'The bot is authorized by approximately ' . $userCount . ' users.';
+        } catch (\Exception $e) {
+            return 'Could not retrieve bot connection data at this time.';
         }
     }
 }
