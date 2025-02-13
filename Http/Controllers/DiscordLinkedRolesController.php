@@ -4,6 +4,7 @@ namespace Paymenter\Extensions\Others\DiscordLinkedRoles\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Setting;
+use Paymenter\Extensions\Others\DiscordLinkedRoles\Models\LinkedRoleSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
@@ -12,7 +13,7 @@ class DiscordLinkedRolesController extends Controller
 {
     public function index()
     {
-        $discordClientId = Setting::where('key', 'discordlinkedroles_client_id')->value('value');
+        $discordClientId = LinkedRoleSetting::value('discordlinkedroles_client_id');
         config()->set('services.discord.redirect', config('settings.app_url') . '/linkedroles/callback');
         $url = 'https://discord.com/api/oauth2/authorize?client_id=' . $discordClientId . '&redirect_uri=' . urlencode(config('services.discord.redirect')) . '&response_type=code&scope=role_connections.write%20identify';
         return redirect($url);
@@ -20,8 +21,8 @@ class DiscordLinkedRolesController extends Controller
 
     public function callback(Request $request)
     {
-        $discordClientId = Setting::where('key', 'discordlinkedroles_client_id')->value('value');
-        $discordClientSecret = Setting::where('key', 'discordlinkedroles_client_secret')->value('value');
+        $discordClientId = LinkedRoleSetting::value('discordlinkedroles_client_id');
+        $discordClientSecret = LinkedRoleSetting::value('discordlinkedroles_client_secret');
         config()->set('services.discord.redirect', config('settings.app_url') . '/linkedroles/callback');
         $code = $request->input('code');
         if (!$code) return redirect()->route('home')->with('error', 'Something went wrong while linking your discord account');
