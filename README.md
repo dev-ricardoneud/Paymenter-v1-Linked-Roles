@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This extension allows you to give your customers a role after they have paid for a product. This is done by linking their Discord account to their account on your website. This extension is made for the [Paymenter](https://paymenter.org).
+This extension allows you to give your customers a role after they have paid for a product. This is done by linking their Discord account to their account on your website. This extension is made for [Paymenter](https://paymenter.org).
 
 Screenshots:
 
