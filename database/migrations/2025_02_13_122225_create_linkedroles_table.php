@@ -18,14 +18,6 @@ return new class extends Migration
             $table->text('discordlinkedroles_client_secret');
             $table->text('discordlinkedroles_bot_token');
         });
-
-        DB::table('linked_role_settings')->insert([
-            [
-                'discordlinkedroles_client_id' => '1296581432969265306',
-                'discordlinkedroles_client_secret' => 'RANDOMEXAMPLESECRET1234567890',
-                'discordlinkedroles_bot_token' => 'RANDOMEXAMPLETOKEN1234567890',
-            ],
-        ]);
     }
 
     /**
