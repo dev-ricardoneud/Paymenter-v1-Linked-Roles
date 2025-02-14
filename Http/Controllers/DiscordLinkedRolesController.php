@@ -13,7 +13,17 @@ class DiscordLinkedRolesController extends Controller
 {
     public function index()
     {
-        $discordClientId = LinkedRoleSetting::value('discordlinkedroles_client_id');
+        $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        if (!$selectedBotId) {
+            return 'No bot selected.';
+        }
+        $bot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+        if (!$bot) {
+            return 'Invalid bot.';
+        }
+
+        $discordClientId = $bot->discordlinkedroles_client_id;
         config()->set('services.discord.redirect', config('settings.app_url') . '/linkedroles/callback');
         $url = 'https://discord.com/api/oauth2/authorize?client_id=' . $discordClientId . '&redirect_uri=' . urlencode(config('services.discord.redirect')) . '&response_type=code&scope=role_connections.write%20identify';
         return redirect($url);
@@ -21,8 +31,18 @@ class DiscordLinkedRolesController extends Controller
 
     public function callback(Request $request)
     {
-        $discordClientId = LinkedRoleSetting::value('discordlinkedroles_client_id');
-        $discordClientSecret = LinkedRoleSetting::value('discordlinkedroles_client_secret');
+        $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        if (!$selectedBotId) {
+            return 'No bot selected.';
+        }
+        $bot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+        if (!$bot) {
+            return 'Invalid bot.';
+        }
+
+        $discordClientId = $bot->discordlinkedroles_client_id;
+        $discordClientSecret = $bot->discordlinkedroles_client_secret;
         config()->set('services.discord.redirect', config('settings.app_url') . '/linkedroles/callback');
         $code = $request->input('code');
         if (!$code) return redirect()->route('home')->with('error', 'Something went wrong while linking your discord account');
@@ -36,6 +56,16 @@ class DiscordLinkedRolesController extends Controller
 
     private function getAccessToken($code, $discordClientId, $discordClientSecret)
     {
+        $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        if (!$selectedBotId) {
+            return 'No bot selected.';
+        }
+        $bot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+        if (!$bot) {
+            return 'Invalid bot.';
+        }
+
         $url = 'https://discord.com/api/oauth2/token';
         $response = Http::asForm()->post($url, [
             'client_id' => $discordClientId,
@@ -51,6 +81,16 @@ class DiscordLinkedRolesController extends Controller
 
     private function getUser($token)
     {
+        $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        if (!$selectedBotId) {
+            return 'No bot selected.';
+        }
+        $bot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+        if (!$bot) {
+            return 'Invalid bot.';
+        }
+
         $url = 'https://discord.com/api/v10/users/@me';
         $response = Http::withToken($token)->get($url);
         if ($response->failed()) return false;
@@ -59,6 +99,16 @@ class DiscordLinkedRolesController extends Controller
 
     private function updateMetaData($id, $token, $discordClientId)
     {
+        $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        if (!$selectedBotId) {
+            return 'No bot selected.';
+        }
+        $bot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+        if (!$bot) {
+            return 'Invalid bot.';
+        }
+        
         $url = 'https://discord.com/api/v10/users/@me/applications/' . $discordClientId . '/role-connection';
         $user = User::find(auth()->user()->id);
         $products = $user->services()->where('status', 'paid')->get();
