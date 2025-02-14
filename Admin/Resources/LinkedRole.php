@@ -59,16 +59,18 @@ class LinkedRole extends Resource
                     ->getStateUsing(fn($record) => $record->discordlinkedroles_client_id),
                 Tables\Columns\TextColumn::make('discordlinkedroles_client_secret')
                     ->label('Discord Client Secret')
-                    ->getStateUsing(fn($record) => $record->discordlinkedroles_client_secret)
+                    ->getStateUsing(fn($record) => 'Hidden for security reasons')
+                    ->tooltip('You can only see it in the edit tab, as it is hidden for security reasons.')
             ])
             ->filters([])
             ->actions([
                 Action::make('sync_now')
                     ->label('Sync Now With Discord')
-                    ->action(function () {
-                        $discordClientId = LinkedRoleSetting::value('discordlinkedroles_client_id');
-                        $discordBotToken = LinkedRoleSetting::value('discordlinkedroles_bot_token');
-
+                    ->icon('heroicon-o-arrow-path')
+                    ->action(function ($record) {
+                        $discordClientId = $record->discordlinkedroles_client_id;
+                        $discordBotToken = $record->discordlinkedroles_bot_token;
+                        
                         if (!$discordClientId || !$discordBotToken) {
                             Notification::make()
                                 ->title('Error')
@@ -101,7 +103,7 @@ class LinkedRole extends Resource
                             Notification::make()
                                 ->title('Sync Failed')
                                 ->danger()
-                                ->body('Something went wrong while pushing the linked roles to Discord.')
+                                ->body('Something went wrong while pushing the linked roles to Discord for Client ID: ' . $discordClientId)
                                 ->send();
                             return;
                         }
@@ -109,10 +111,11 @@ class LinkedRole extends Resource
                         Notification::make()
                             ->title('Sync Successful')
                             ->success()
-                            ->body('Linked roles have been pushed to Discord.')
+                            ->body('Linked roles have been pushed to Discord for Client ID: ' . $discordClientId)
                             ->send();
                     }),
                     Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
             ]);
     }
 
