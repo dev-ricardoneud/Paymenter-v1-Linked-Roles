@@ -17,6 +17,12 @@ class DiscordLinkedRoles extends Extension
     public function getConfig($values = [])
     {
         try {
+            $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_client_id']);
+            $botOptions = $bots->filter(function ($bot) {
+                return !empty($bot->discordlinkedroles_client_id);
+            })->pluck('discordlinkedroles_client_id', 'id')->toArray();
+            
+            $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
             return [
                 [
                     'name' => 'Notice',
@@ -29,10 +35,18 @@ class DiscordLinkedRoles extends Extension
                     'label' => new HtmlString($this->getVersion()),
                 ],
                 [
+                    'name' => 'discord_bot_id',
+                    'type' => 'select',
+                    'label' => 'Select a Discord Bot',
+                    'options' => $botOptions,
+                    'description' => new HtmlString($this->getDiscordBotName($selectedBotId)),
+                    'value' => $selectedBotId,
+                ],
+                [
                     'name' => 'Discord Bot Connections',
                     'type' => 'placeholder',
-                    'label' => new HtmlString($this->getDiscordBotConnections()),
-                ],  
+                    'label' => new HtmlString($this->getDiscordBotConnections($selectedBotId)),
+                ],
             ];
         } catch (\Exception $e) {
             return [
@@ -60,9 +74,11 @@ class DiscordLinkedRoles extends Extension
         try {
             $response = Http::get("https://api.github.com/repos/" . self::GITHUB_REPO . "/releases/latest");
             $latestRelease = $response->json();
-            $latestVersion = $latestRelease['tag_name'] ?? 'unknown';
-            $currentVersion = 'v1.0.3';
-
+            if (!is_array($latestRelease) || !isset($latestRelease['tag_name'])) {
+                return 'Could not check for updates at this time.';
+            }
+            $latestVersion = $latestRelease['tag_name'];
+            $currentVersion = 'v1.0.4';
             if (version_compare($currentVersion, $latestVersion, '>')) {
                 return 'The version ' . $currentVersion . ' does not exist. If this is the main branch, it may contain errors. Please downgrade to the latest stable version (' . $latestVersion . ') to avoid potential issues.';
             } elseif ($currentVersion === $latestVersion) {
@@ -75,22 +91,53 @@ class DiscordLinkedRoles extends Extension
         }
     }
 
-    public function getDiscordBotConnections()
+    public function getDiscordBotConnections($botId = null)
     {
         try {
-            $discordBotToken = LinkedRoleSetting::value('discordlinkedroles_bot_token');
+            if (!$botId) {
+                return 'No bot selected.';
+            }
+            $bot = LinkedRoleSetting::where('id', $botId)->first();
+            if (!$bot) {
+                return 'Invalid bot selection.';
+            }
             $response = Http::withHeaders([
-                'Authorization' => 'Bot ' . $discordBotToken,
+                'Authorization' => 'Bot ' . $bot->discordlinkedroles_bot_token,
             ])->get(self::DISCORD_API_URL . '/applications/@me');
-
             if ($response->failed()) {
                 return 'Could not retrieve bot connection data at this time.';
             }
-
             $data = $response->json();
-            $userCount = $data['approximate_user_install_count'] ?? 'unknown';
+            if (!is_array($data) || !isset($data['approximate_user_install_count']) || !isset($data['name'])) {
+                return 'Could not retrieve bot connection data at this time.';
+            }
+            return 'The bot ' . $data['name'] . ' is authorized by approximately ' . $data['approximate_user_install_count'] . ' users.';
+        } catch (\Exception $e) {
+            return 'Could not retrieve bot connection data at this time.';
+        }
+    }
 
-            return 'The bot is authorized by approximately ' . $userCount . ' users.';
+    public function getDiscordBotName($botId = null)
+    {
+        try {
+            if (!$botId) {
+                return 'No bot selected.';
+            }
+            $bot = LinkedRoleSetting::where('id', $botId)->first();
+            if (!$bot) {
+                return 'Invalid bot selection.';
+            }
+            $response = Http::withHeaders([
+                'Authorization' => 'Bot ' . $bot->discordlinkedroles_bot_token,
+            ])->get(self::DISCORD_API_URL . '/applications/@me');
+            if ($response->failed()) {
+                return 'Could not retrieve bot name at this time.';
+            }
+            $data = $response->json();
+            if (!is_array($data) || !isset($data['name'])) {
+                return 'Could not retrieve bot name at this time.';
+            }
+            return 'Linked Roles connected with ' . $data['name'] . '';
         } catch (\Exception $e) {
             return 'Could not retrieve bot connection data at this time.';
         }
