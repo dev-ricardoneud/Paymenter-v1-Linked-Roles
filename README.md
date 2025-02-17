@@ -32,9 +32,9 @@ Linking Paymenter -> Discord
 
 **3.** Access the newly created application, go to the Bot tab, and create a new bot. Copy the received token and save it in a secure place.
 
-**4.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/linkedroles/callback`.
+**4.** Navigate to the OAuth2 tab and add a new "Redirect" with the value `https://yourDashboardDomainHere.example/youcansetthisperbot`.
 
-**5.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/linkedroles` into the **LINKED ROLES VERIFICATION URL** field.
+**5.** After confirming the changes, open the General Information tab, scroll down, and paste `https://yourDashboardDomainHere.example/youcansetthisperbot` into the **LINKED ROLES VERIFICATION URL** field.
 
 **6.** Add your bot to your server using the Url Generator from the OAuth2 tab.
 
