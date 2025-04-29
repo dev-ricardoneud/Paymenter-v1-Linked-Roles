@@ -142,7 +142,7 @@ class LinkedRole extends Resource
                                 ->searchable()
                                 ->required(),
                             TextInput::make('success_route')
-                                ->label('Success Route')
+                                ->label('Success Route (Custom Page Only)')
                                 ->placeholder('Enter the route for the success (e.g., /linkedroles/success)')
                                 ->nullable()
                                 ->rules('regex:/^\/[a-zA-Z\/]*$/')
@@ -237,31 +237,27 @@ class LinkedRole extends Resource
     }
 
     public static function getPages(): array
-    {         
+    {
+      try {
         $bots = LinkedRoleSetting::all();
+    } catch (\Illuminate\Database\QueryException $e) {
+        $bots = collect();
+    }
 
-        if ($bots->isEmpty()) {
-            return [
-                'index' => Pages\AdminLinkedRoles::route('/'),
-                'create' => Pages\AdminLinkedRolesCreate::route('create/settings'),
-            ];
-        }
-
-        $pages = [
+    if ($bots->isEmpty()) {
+        return [
             'index' => Pages\AdminLinkedRoles::route('/'),
             'create' => Pages\AdminLinkedRolesCreate::route('create/settings'),
+            'edit' => Pages\AdminLinkedRolesEdit::route('{record}/settings'),
         ];
-
-        foreach ($bots as $bot) {
-            $pages['edit'] = Pages\AdminLinkedRolesEdit::route('{record}/edit/settings');
-        }
-
-        return $pages;
     }
 
-    public static function canAccess(): bool
-    {
-        $user = auth()->user();
-        return $user && $user->hasPermission('*');
-    }
+    $pages = [
+        'index' => Pages\AdminLinkedRoles::route('/'),
+        'create' => Pages\AdminLinkedRolesCreate::route('create/settings'),
+        'edit' => Pages\AdminLinkedRolesEdit::route('{record}/settings'),
+    ];
+
+    return $pages;
+  }
 }
