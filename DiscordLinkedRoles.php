@@ -114,7 +114,7 @@ class DiscordLinkedRoles extends Extension
                 return 'Could not check for updates at this time.';
             }
             $latestVersion = $latestRelease['tag_name'];
-            $currentVersion = 'v1.0.5';
+            $currentVersion = 'v1.0.6';
             if (version_compare($currentVersion, $latestVersion, '>')) {
                 return 'The version ' . $currentVersion . ' does not exist. If this is the main branch, it may contain errors. Please downgrade to the latest stable version (' . $latestVersion . ') to avoid potential issues.';
             } elseif ($currentVersion === $latestVersion) {
