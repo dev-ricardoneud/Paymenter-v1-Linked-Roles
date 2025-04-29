@@ -252,6 +252,12 @@ class LinkedRole extends Resource
         ];
     }
 
+    public static function canAccess(): bool
+    {
+       $user = auth()->user();
+       return $user && $user->hasPermission('*');
+    }
+
     $pages = [
         'index' => Pages\AdminLinkedRoles::route('/'),
         'create' => Pages\AdminLinkedRolesCreate::route('create/settings'),
