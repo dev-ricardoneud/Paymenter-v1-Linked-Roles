@@ -236,6 +236,12 @@ class LinkedRole extends Resource
             ]);
     }
 
+    public static function canAccess(): bool
+    {
+       $user = auth()->user();
+       return $user && $user->hasPermission('*');
+    }
+
     public static function getPages(): array
     {
       try {
@@ -250,12 +256,6 @@ class LinkedRole extends Resource
             'create' => Pages\AdminLinkedRolesCreate::route('create/settings'),
             'edit' => Pages\AdminLinkedRolesEdit::route('{record}/settings'),
         ];
-    }
-
-    public static function canAccess(): bool
-    {
-       $user = auth()->user();
-       return $user && $user->hasPermission('*');
     }
 
     $pages = [
