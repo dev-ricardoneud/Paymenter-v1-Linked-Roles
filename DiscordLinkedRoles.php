@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Schema;
 use Paymenter\Extensions\Others\DiscordLinkedRoles\Models\LinkedRoleSetting;
 
 class DiscordLinkedRoles extends Extension
@@ -14,79 +15,89 @@ class DiscordLinkedRoles extends Extension
     public function getConfig($values = [])
     {
         try {
-            $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_bot_name']);
-            $botOptions = $bots->filter(function ($bot) {
-                return !empty($bot->discordlinkedroles_bot_name);
-            })->pluck('discordlinkedroles_bot_name', 'id')->toArray();
-            
-            $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
-            $discordBot = LinkedRoleSetting::where('id', $selectedBotId)->first();
-            $discordBotName = $discordBot ? $discordBot->discordlinkedroles_bot_name : 'No bot';
-            
-            return [
-                [
-                    'name' => 'Notice',
-                    'type' => 'placeholder',
-                    'label' => new HtmlString('Discord Linked Roles Extension, originally created by Corwin, the owner of Paymenter, and later adapted by Ricardo Neud.'),
-                ],
-                [
-                    'name' => 'Version Check',
-                    'type' => 'placeholder',
-                    'label' => new HtmlString($this->getVersion()),
-                ],
-                [
-                    'name' => 'discord_bot_id',
-                    'type' => 'select',
-                    'label' => 'Select a Discord Bot',
-                    'options' => $botOptions,
-                    'description' => 'Linked Roles connected with ' . $discordBotName,
-                    'value' => $selectedBotId,
-                    'disabled' => false,
-                    'live' => true,
-                ],
-                [
-                    'name' => 'Discord Bot Connections',
-                    'type' => 'placeholder',
-                    'label' => new HtmlString($this->getDiscordBotConnections($selectedBotId)),
-                ],
-            ];
-        } catch (\Exception $e) {
-            $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
-            $discordBot = LinkedRoleSetting::where('id', $selectedBotId)->first();
-            $discordBotName = $discordBot ? $discordBot->discordlinkedroles_bot_name : 'No bot selected';
-            return [
-                [
-                    'name' => 'Notice',
-                    'type' => 'placeholder',
-                    'label' => new HtmlString('Discord Linked Roles Extension, originally created by Corwin, the owner of Paymenter, and later adapted by Ricardo Neud.'),
-                ],
-                [
-                    'name' => 'Version Check',
-                    'type' => 'placeholder',
-                    'label' => new HtmlString($this->getVersion()),
-                ],
-                [
-                    'name' => 'discord_bot_id',
-                    'type' => 'select',
-                    'label' => 'Select a Discord Bot',
-                    'options' => [
-                        '' . $selectedBotId . '' => 'No Bots Found',
+            if (Schema::hasTable('linked_role_settings')) {
+                $bots = LinkedRoleSetting::all(['id', 'discordlinkedroles_bot_name']);
+                $botOptions = $bots->filter(function ($bot) {
+                    return !empty($bot->discordlinkedroles_bot_name);
+                })->pluck('discordlinkedroles_bot_name', 'id')->toArray();
+                
+                $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+                $discordBot = LinkedRoleSetting::where('id', $selectedBotId)->first();
+                $discordBotName = $discordBot ? $discordBot->discordlinkedroles_bot_name : 'No bot';
+                
+                return [
+                    [
+                        'name' => 'Notice',
+                        'type' => 'placeholder',
+                        'label' => new HtmlString('Discord Linked Roles Extension, originally created by Corwin, the owner of Paymenter, and later adapted by Ricardo Neud.'),
                     ],
-                    'description' => 'Linked Roles connected with ' . $discordBotName,
-                    'value' => $selectedBotId,
-                    'disabled' => true,
-                    'live' => true,
-                ],
-            ];
+                    [
+                        'name' => 'Version Check',
+                        'type' => 'placeholder',
+                        'label' => new HtmlString($this->getVersion()),
+                    ],
+                    [
+                        'name' => 'discord_bot_id',
+                        'type' => 'select',
+                        'label' => 'Select a Discord Bot',
+                        'options' => $botOptions,
+                        'description' => 'Linked Roles connected with ' . $discordBotName,
+                        'value' => $selectedBotId,
+                        'disabled' => false,
+                        'live' => true,
+                    ],
+                    [
+                        'name' => 'Discord Bot Connections',
+                        'type' => 'placeholder',
+                        'label' => new HtmlString($this->getDiscordBotConnections($selectedBotId)),
+                    ],
+                ];
+            } else {
+                return $this->defaultConfig();
+            }
+        } catch (\Exception $e) {
+            return $this->defaultConfig();
         }
+    }
+
+    private function defaultConfig()
+    {
+        $selectedBotId = Setting::where('key', 'discord_bot_id')->value('value');
+        return [
+            [
+                'name' => 'Notice',
+                'type' => 'placeholder',
+                'label' => new HtmlString('Discord Linked Roles Extension, originally created by Corwin, the owner of Paymenter, and later adapted by Ricardo Neud.'),
+            ],
+            [
+                'name' => 'Version Check',
+                'type' => 'placeholder',
+                'label' => new HtmlString($this->getVersion()),
+            ],
+            [
+                'name' => 'discord_bot_id',
+                'type' => 'select',
+                'label' => 'Select a Discord Bot',
+                'options' => [
+                    '' . $selectedBotId . '' => 'No Bots Found',
+                ],
+                'description' => 'No bot selected.',
+                'value' => $selectedBotId,
+                'disabled' => true,
+                'live' => true,
+            ],
+        ];
     }
 
     public function enabled()
     {
-        Artisan::call('migrate', ['--path' => [
+      Artisan::call('migrate', [
+        '--path' => [
             'extensions/Others/DiscordLinkedRoles/database/migrations/2025_02_13_122225_create_linkedroles_table.php',
-            'extensions/Others/DiscordLinkedRoles/database/migrations/2025_02_13_122225_create_linkedroles_custom_pages_table.php'
-        ]]);
+            'extensions/Others/DiscordLinkedRoles/database/migrations/2025_02_13_122225_create_linkedroles_custom_pages_table.php',
+         ],
+           '--force' => true,
+        ]);
     }
 
     public function boot()
@@ -121,6 +132,9 @@ class DiscordLinkedRoles extends Extension
         try {
             if (!$botId) {
                 return 'No bot selected.';
+            }
+            if (!Schema::hasTable('linked_role_settings')) {
+                return 'Bot connections not available yet.';
             }
             $bot = LinkedRoleSetting::where('id', $botId)->first();
             if (!$bot) {
